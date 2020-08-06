@@ -1,6 +1,6 @@
 import os
 import json
-
+import time
 # Adding the CPDT results to the library
 # Specify path to the original database file (database parameter)
 # Specify path to the CP-DT output of the database file
@@ -33,7 +33,6 @@ def add_cpdt(database, cpdt_file):
                 #header = line[0]
         else:
             seq_ID[line] = header
-            print(header)
             header = ''
 
     Peptide_score_dict = {}
@@ -93,14 +92,22 @@ def add_DeepMS(DeepMS_output, cpdt_dict):
     AAAAAAAAKAKNNK	5.394e-05	0
     """
     # look at output example in docstring to follow these steps
+    peptide_dict = {}
+    for k1, s in cpdt_dict.items():
+        for k2, v in s.items():
+            peptide_dict.setdefault(k2, {})[k1] = v
+
     with open(DeepMS_output, 'r') as DeepMS_results:
         next(DeepMS_results)
-        for index, line in enumerate(DeepMS_results):
+        for line in DeepMS_results:
+            start = time.time()
             line = line.rstrip()
             line = line.split('\t')
-            for key in cpdt_dict:
-                if line[0] in cpdt_dict[key]:
-                    cpdt_dict[key][line[0]]['DeepMSPeptide'] = line[1]
+            for key in peptide_dict[line[0]]:
+                cpdt_dict[key][line[0]]['DeepMSPeptide'] = line[1]
+            stop = time.time()
+            duration = stop - start
+            print(duration)
 
     DeepMS_results.close()
 
@@ -157,5 +164,5 @@ if three_predict_dict:
 del two_predict_dict
 
 # the Json file will be created in the directory where this python script is
-with open('proteotypicity_scores_9MM_v4.txt', 'w+') as json_file:
+with open('proteotypicity_scores_9MM_test2.txt', 'w+') as json_file:
     json.dump(three_predict_dict, json_file)
