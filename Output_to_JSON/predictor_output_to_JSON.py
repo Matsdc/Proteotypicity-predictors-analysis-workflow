@@ -22,18 +22,18 @@ def add_cpdt(database, cpdt_file):
     seq_ID = {}
     header = ''
     #getting all the headers from the original database (because CP-DT does not include this)
+    #this code can easily be manipulated to get the part of the header you want as key
     for line in file_database:
         line = line.rstrip()
         if '>' in line:
-            for character in line:
-                if character == '>':
-                    pass
-                elif character == ' ' or character == '\n':
-                    break
-                else:
-                    header += character
+            line = line.split(' ')
+            #try:
+            header = line[0][1:]
+            #except IndexError:
+                #header = line[0]
         else:
             seq_ID[line] = header
+            print(header)
             header = ''
 
     Peptide_score_dict = {}
@@ -63,7 +63,7 @@ def add_cpdt(database, cpdt_file):
 
 # not the cleanest way but at the moment I'm using the functions in the same script so running this script (with the parameters adjusted)
 # should make it possible for you to get the scores from each predictor for each peptide in one dictionary
-cpdt_dict = add_cpdt('E:\Mats\Databases\SIHUMIx\SIHUMIx_crap_twoline.fasta', 'E:\Mats\CP-DT\SIHUMIx\SIHUMIx_crap.cpdt')
+cpdt_dict = add_cpdt('E:\Mats\Databases\9MM\9MM_DB.fasta', 'E:\Mats\CP-DT\9MM\9MM_DB_test1.cpdt')
 
 if cpdt_dict:
     print('CPDT done!')
@@ -106,7 +106,7 @@ def add_DeepMS(DeepMS_output, cpdt_dict):
 
     return cpdt_dict
 
-two_predict_dict = add_DeepMS('E:\Mats\DeepMSPeptide\Datasets\Peptide_list_no_X_SIHUMIx_Predictions.txt', cpdt_dict)
+two_predict_dict = add_DeepMS('E:\Mats\DeepMSPeptide\Datasets\Peptide_list_9MM_8_30_Predictions.txt', cpdt_dict)
 
 if two_predict_dict:
     print('DeepMSpeptide done!')
@@ -149,7 +149,7 @@ def add_AP3(AP3_output, two_predict_dict):
 
     return two_predict_dict
 
-three_predict_dict = add_AP3('E:/Mats/AP3/Results_SIHUMIx/', two_predict_dict)
+three_predict_dict = add_AP3('E:/Mats/AP3/Results_9MM/', two_predict_dict)
 
 if three_predict_dict:
     print('AP3 done!')
@@ -157,5 +157,5 @@ if three_predict_dict:
 del two_predict_dict
 
 # the Json file will be created in the directory where this python script is
-with open('proteotypicity_scores_SIHUMIx.txt', 'w+') as json_file:
+with open('proteotypicity_scores_9MM_v4.txt', 'w+') as json_file:
     json.dump(three_predict_dict, json_file)
