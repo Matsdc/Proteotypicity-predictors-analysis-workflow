@@ -91,12 +91,12 @@ def add_DeepMS(DeepMS_output, cpdt_dict):
     AAAAAAAAKAK	0.0001681	0
     AAAAAAAAKAKNNK	5.394e-05	0
     """
-    # look at output example in docstring to follow these steps
+    #Switching the keys (peptides with protein ID) so that we can search more efficiently through the different available peptides
     peptide_dict = {}
     for k1, s in cpdt_dict.items():
         for k2, v in s.items():
             peptide_dict.setdefault(k2, {})[k1] = v
-
+    # look at output example in docstring to follow these steps
     with open(DeepMS_output, 'r') as DeepMS_results:
         next(DeepMS_results)
         for line in DeepMS_results:
